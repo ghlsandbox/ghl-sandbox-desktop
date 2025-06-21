@@ -1,3 +1,4 @@
+const { autoUpdater } = require('electron-updater');
 const { app, BrowserWindow, Notification } = require('electron');
 const path = require('path');
 
@@ -43,7 +44,12 @@ function createWindow() {
     });
 }
 
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+    createWindow();
+
+    // Check for updates after the window is created
+    autoUpdater.checkForUpdatesAndNotify();
+});
 
 app.on('window-all-closed', function () {
     if (process.platform !== 'darwin') app.quit();
