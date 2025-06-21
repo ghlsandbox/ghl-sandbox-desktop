@@ -1,5 +1,5 @@
 const { autoUpdater } = require('electron-updater');
-const { app, BrowserWindow, Notification } = require('electron');
+const { app, BrowserWindow, Notification, dialog, Menu } = require('electron');
 const path = require('path');
 
 let splash;
@@ -14,13 +14,14 @@ function createWindow() {
         frame: false,
         alwaysOnTop: true
     });
-    splash.loadFile('splas.html');
+    splash.loadFile('splash.html');
 
     mainWindow = new BrowserWindow({
         width: 1280,
         height: 900,
         show: false, // Hide main window until ready
         icon: path.join(__dirname, 'icon.png'),
+        title: `GHL Sandbox v${app.getVersion()}`,
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false,
@@ -31,7 +32,27 @@ function createWindow() {
     mainWindow.loadURL('https://app.ghlsandbox.com');
 
     // Hide the menu bar
-    //win.setMenu(null);
+    mainWindow.setMenu(null);
+
+    const template = [
+        {
+            label: 'Help',
+            submenu: [
+                {
+                    label: 'About',
+                    click: () => {
+                        dialog.showMessageBox(mainWindow, {
+                            type: 'info',
+                            title: 'About',
+                            message: `GHL Sandbox Desktop App \nVersion ${app.getVersion()}\n© 2025 GHL Sandbox`
+                        });
+                    }
+                }
+            ]
+        }
+    ];
+    const menu = Menu.buildFromTemplate(template);
+    mainWindow.setMenu(menu);
 
     // Hide but allow Alt key to show menu (Windows only)
     mainWindow.setAutoHideMenuBar(true);
@@ -39,7 +60,9 @@ function createWindow() {
 
     // Optional: Show a notification when the app loads
     mainWindow.webContents.on('did-finish-load', () => {
-        splash.close();
+        if (splash && !splash.isDestroyed()) {
+            splash.close();
+        }
         mainWindow.show();
     });
 }
