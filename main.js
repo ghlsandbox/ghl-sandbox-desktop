@@ -5,6 +5,21 @@ const path = require('path');
 let splash;
 let mainWindow;
 
+autoUpdater.on('update-available', () => {
+    // Optionally notify user that a new update is downloading
+});
+
+autoUpdater.on('update-downloaded', () => {
+    // Optionally prompt the user to restart now
+    dialog.showMessageBox({
+        type: 'info',
+        title: 'Update Ready',
+        message: 'A new version has been downloaded. Please restart the app to apply the update.'
+    }).then(() => {
+        autoUpdater.quitAndInstall();
+    });
+});
+
 function createWindow() {
 
     splash = new BrowserWindow({
@@ -29,15 +44,47 @@ function createWindow() {
         }
     });
 
+    // Prevent opening new external windows/tabs
+    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+        // Instead of opening a new window, load the URL in the same window
+        mainWindow.loadURL(url);
+        return { action: 'deny' };
+    })
+
     mainWindow.loadURL('https://app.ghlsandbox.com');
+    mainWindow.setTitle(`GHL Sandbox v${app.getVersion()}`);
+
+    mainWindow.on('page-title-updated', (event) => {
+        event.preventDefault();
+        mainWindow.setTitle(`GHL Sandbox v${app.getVersion()}`);
+    });
 
     // Hide the menu bar
     mainWindow.setMenu(null);
 
-    const template = [
+    const menuTemplate = [
         {
-            label: 'Help',
+            label: 'Navigation',
             submenu: [
+                {
+                    label: 'Support',
+                    click: () => {
+                        mainWindow.loadURL('https://support.ghlsandbox.net');
+                    }
+                },
+                {
+                    label: 'Community',
+                    click: () => {
+                        mainWindow.loadURL('https://community.ghlsandbox.net')
+                    }
+                },
+                {
+                    label: 'Enroll',
+                    click: () => {
+                        mainWindow.loadURL('https://ghlsandbox.net');
+                    }
+                },
+                { type: 'separator' },
                 {
                     label: 'About',
                     click: () => {
@@ -51,7 +98,7 @@ function createWindow() {
             ]
         }
     ];
-    const menu = Menu.buildFromTemplate(template);
+    const menu = Menu.buildFromTemplate(menuTemplate);
     mainWindow.setMenu(menu);
 
     // Hide but allow Alt key to show menu (Windows only)

@@ -1,6 +1,6 @@
 {
   "name": "ghl-sandbox-desktop",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "GHL Sandbox Desktop APp",
   "main": "main.js",
   "scripts": {
