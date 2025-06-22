@@ -1,7 +1,7 @@
 {
   "name": "ghl-sandbox-desktop",
-  "version": "1.0.3",
-  "description": "GHL Sandbox Desktop APp",
+  "version": "1.0.4",
+  "description": "GHL Sandbox Desktop App",
   "main": "main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,7 +18,7 @@
     "electron-builder": "^26.0.12"
   },
   "build": {
-    "appId": "com.ghlsandbox.desktop",
+    "appId": "com.yourcompany.ghlsandbox",
     "productName": "GHL Sandbox",
     "copyright": "Copyright © 2025 GHL Sandbox",
     "win": {
