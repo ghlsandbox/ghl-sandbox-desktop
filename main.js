@@ -1,5 +1,5 @@
 const { autoUpdater } = require('electron-updater');
-const { app, BrowserWindow, Notification, dialog, Menu } = require('electron');
+const { app, BrowserWindow, Notification, shell, dialog, Menu } = require('electron');
 const fs = require('fs');
 const path = require('path');
 
@@ -31,13 +31,13 @@ function createWindow() {
     });
 
     // Prevent opening new external windows/tabs
-    mainWindow.webContents.setWindowOpenHandler(({ url }) => {
+    //mainWindow.webContents.setWindowOpenHandler(({ url }) => {
         // Instead of opening a new window, load the URL in the same window
-        mainWindow.loadURL(url);
-        return { action: 'deny' };
-    })
+        //mainWindow.loadURL(url);
+        //return { action: 'deny' };
+    //})
 
-    mainWindow.loadURL('https://app.ghlsandbox.com');
+    mainWindow.loadFile('home.html');
     mainWindow.setTitle(`GHL Sandbox v${app.getVersion()}`);
 
     mainWindow.on('page-title-updated', (event) => {
@@ -46,39 +46,91 @@ function createWindow() {
     });
 
     // Hide the menu bar
-    mainWindow.setMenu(null);
+    //mainWindow.setMenu(null);
 
     const menuTemplate = [
         {
-            label: 'Navigation',
+            label: '← Back',
+            accelerator: 'Alt+Left',
+            click: (menuItem, browserWindow) => {
+                if (browserWindow && browserWindow.webContents.canGoBack()) {
+                browserWindow.webContents.goBack();
+                }
+            }
+        },
+        {
+            label: 'Home',
+            click: (menuItem, browserWindow) => {
+                if (browserWindow) {
+                  browserWindow.loadURL('https://app.ghlsandbox.com');
+                }
+            }
+        },
+        {
+            label: 'Community',
+            click: (menuItem, browserWindow) => {
+                if (browserWindow) {
+                  browserWindow.loadURL('https://community.ghlsandbox.net');
+                }
+            }
+        },
+        {
+            label: 'Chat',
+            click: (menuItem, browserWindow) => {
+                if (browserWindow) {
+                  browserWindow.loadURL('https://app.slack.com/client/T08KJ730RJB/C08KJ734YBZ');
+                }
+            }
+        },
+        {
+            label: 'Tasks',
+            click: (menuItem, browserWindow) => {
+                if (browserWindow) {
+                  browserWindow.loadURL('https://app.clickup.com/90161056002/home');
+                }
+            }
+        },
+        {
+            label: 'Renewal',
+            click: (menuItem, browserWindow) => {
+                if (browserWindow) {
+                  browserWindow.loadURL('https://ghlsandbox.net/sub-account-renewal');
+                }
+            }
+        },
+        {
+            label: 'Directory',
+            click: (menuItem, browserWindow) => {
+                if (browserWindow) {
+                  browserWindow.loadFile('soon.html');
+                }
+            }
+        },
+        {
+            label: 'Important Links',
             submenu: [
                 {
-                    label: 'Support',
-                    click: () => {
-                        mainWindow.loadURL('https://support.ghlsandbox.net');
+                    label: 'Privacy Policy',
+                    click: (menuItem, browserWindow) => {
+                        if (browserWindow) {
+                        browserWindow.loadURL('https://ghlsandbox.net/privacy-policy-page');
+                        }
                     }
                 },
                 {
-                    label: 'Community',
-                    click: () => {
-                        mainWindow.loadURL('https://community.ghlsandbox.net')
+                    label: 'Terms and Conditions',
+                    click: (menuItem, browserWindow) => {
+                        if (browserWindow) {
+                        browserWindow.loadURL('https://ghlsandbox.net/terms-and-agreement-page');
+                        }
                     }
                 },
                 {
-                    label: 'Enroll',
-                    click: () => {
-                        mainWindow.loadURL('https://ghlsandbox.net');
-                    }
-                },
-                { type: 'separator' },
-                {
-                    label: 'About',
-                    click: () => {
-                        dialog.showMessageBox(mainWindow, {
-                            type: 'info',
-                            title: 'About',
-                            message: `GHL Sandbox Desktop App \nVersion ${app.getVersion()}\n© 2025 GHL Sandbox`
-                        });
+                    label: 'Earning Disclaimer',
+                    click: (menuItem, browserWindow) => {
+                        if (browserWindow) {
+                        browserWindow.loadURL('https://ghlsandbox.net/earning-disclaimer-page');
+                        }
                     }
                 }
             ]
@@ -88,8 +140,8 @@ function createWindow() {
     mainWindow.setMenu(menu);
 
     // Hide but allow Alt key to show menu (Windows only)
-    mainWindow.setAutoHideMenuBar(true);
-    mainWindow.setMenuBarVisibility(false);
+    //mainWindow.setAutoHideMenuBar(true);
+    mainWindow.setMenuBarVisibility(true);
 
     // Optional: Show a notification when the app loads
     mainWindow.webContents.on('did-finish-load', () => {
