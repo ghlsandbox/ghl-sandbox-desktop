@@ -6,37 +6,6 @@ const path = require('path');
 let splash;
 let mainWindow;
 
-// // Wait until app is ready before getting userData path!
-// app.on('ready', () => {
-//     const logPath = path.join(app.getPath('userData'), 'updater.log');
-//     fs.appendFileSync(logPath, `[${new Date().toISOString()}] LOG TEST\n`);
-//     console.log('Attempted to write to:', logPath);
-
-//     // Use app.getPath('userData') to get the correct user data folder
-//     console.log('Updater log will be written to:', logPath);
-
-//     function logUpdater(message) {
-//         fs.appendFileSync(logPath, `[${new Date().toISOString()}] ${message}\n`);
-//     }
-
-//     autoUpdater.on('checking-for-update', () => logUpdater('Checking for updates...'));
-//     autoUpdater.on('update-available', () => logUpdater('Update available!'));
-//     autoUpdater.on('update-not-available', () => logUpdater('No update available.'));
-//     autoUpdater.on('error', (err) => logUpdater(`Updater error: ${err}`));
-//     autoUpdater.on('update-downloaded', () => logUpdater('Update downloaded!'));
-// });
-
-// autoUpdater.on('update-downloaded', () => {
-//     // Optionally prompt the user to restart now
-//     dialog.showMessageBox({
-//         type: 'info',
-//         title: 'Update Ready',
-//         message: 'A new version has been downloaded. Please restart the app to apply the update.'
-//     }).then(() => {
-//         autoUpdater.quitAndInstall();
-//     });
-// });
-
 function createWindow() {
 
     splash = new BrowserWindow({
@@ -57,7 +26,7 @@ function createWindow() {
         webPreferences: {
             contextIsolation: true,
             nodeIntegration: false,
-            //devTools: false, // disables F12 in production
+            devTools: false, // disables F12 in production
         }
     });
 
@@ -132,29 +101,28 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
-    createWindow();
+    // 1. Create the main window
+    createWindow();              
 
-    // Log updater events (for troubleshooting)
+    // 2. Set up autoUpdater event listeners (these can be before or after checkForUpdates)
     autoUpdater.on('checking-for-update', () => console.log('Checking for updates...'));
     autoUpdater.on('update-available', () => console.log('Update available!'));
     autoUpdater.on('update-not-available', () => console.log('No update available.'));
     autoUpdater.on('error', (err) => console.error('Updater error:', err));
-    autoUpdater.on('update-downloaded', () => console.log('Update downloaded!'));
-
-    // Prompt user to update now (optional)
-    
     autoUpdater.on('update-downloaded', () => {
+        console.log('Update downloaded!');
+        // Optional prompt to restart
         dialog.showMessageBox({
         type: 'info',
-        title: 'Update Available',
-        message: 'A new version has been downloaded. Restart the app to update now?',
+        title: 'Update Ready',
+        message: 'A new version has been downloaded. Restart now to update?',
         buttons: ['Restart', 'Later']
         }).then(result => {
         if (result.response === 0) autoUpdater.quitAndInstall();
         });
     });
 
-    // Check for updates
+    // 3. Check for updates after everything is set up
     autoUpdater.checkForUpdatesAndNotify();
 });
 
